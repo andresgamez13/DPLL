@@ -13,13 +13,12 @@ def DPLL(S, I):
         return "Satisfacible", I
 
     for i in S:
-        if len(i) > 0:
-            for x in i:
-                if x not in I:
-                    l = x
-                    break
-            if l:
+        for x in i:
+            if x not in I:
+                l = x
                 break
+        if l:
+            break
 
     if l[0] != '-':
         lcomp = '-'+l
