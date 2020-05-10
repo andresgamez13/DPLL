@@ -7,14 +7,16 @@ def DPLL(S, I):
         S, I = UP.UnitPropagate(S, I)
 
     if  [] in S:
-        #print("caso 1")
+        
+        #print("caso 1",I)
         return "Insatisfacible", {}
 
     if not S:
-        #print("caso 2")
+        #print("caso 2",I)
         return "Satisfacible", I
 
-    #print("caso 3")
+    #print("caso 3",I)
+    l=""
     for i in S:
         for x in i:
             if x not in I:
@@ -22,11 +24,11 @@ def DPLL(S, I):
                 break
         if l:
             break
-
+    #print(l)
     if l[0] != '-':
         lcomp = '-'+l
     elif l[0] == '-':
-        lcomp = l[:0] + l[1:]
+        lcomp = l[1]
 
     new_S = []
     for i in S:
@@ -38,11 +40,10 @@ def DPLL(S, I):
         if new_clause not in new_S and new_clause:
             new_S.append(new_clause)
 
-    if l[0] == '-':
+    if len(l)>1:
         I[lcomp] = 0
     else:
-        I[l] = 1
-    #print(I)
+        I[l]=1
     res,II=DPLL(new_S,I)
     if res=="Satisfacible":
         #print("caso 3.1")
@@ -59,15 +60,15 @@ def DPLL(S, I):
                         new_clause.append(x)
             if new_clause not in new_Sv2 and new_clause:
                 new_Sv2.append(new_clause)
-        if l[0] == '-':
+        if len(l)>1:
             I[lcomp] = 1
         else:
-            I[l] = 0
+            I[l]=0
         return DPLL(new_Sv2, I)
 
 
 
 
 
-b = [['r', 'p', 's'], ['-r', '-p', '-s'], ['-r', 'p', 's'], ['p', '-s']]
+b = [['p','q','r'],['-p','-q','-r'],['-p','q','r'],['-q','r'],['q','-r']]
 print(DPLL(b, {}))
