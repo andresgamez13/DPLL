@@ -1,52 +1,62 @@
 import UnitPropagate as UP
 
-def elimina_clausulas(l, string):
-    new_clause = ''
-    if l in string:
-        for x in range(len(string)-1):
-            if string[x]+string[x+1] != '-'+l:
-                new_clause += string[x]
-    new_clause += string[len(string)-1]
-    return new_clause
-
 
 def DPLL(S, I):
+
     if UP.UnitPropagate(S, I):
-       S, I = UP.UnitPropagate(S, I)
+        S, I = UP.UnitPropagate(S, I)
 
-    if  '[]' in S:
-        return False, {}
+    if  [] in S:
+        return "Insatisfacible", {}
 
-    if  len(S) == 0:
-        return True, {}
+    if not S:
+        return "Satisfacible", I
 
     for i in S:
-        if i[0] != '-':
-            l = i[0]
-            if l not in I:
-                break
-        else:
-            l = i[1]
-            if l not in I:
+        if len(i) > 0:
+            for x in i:
+                if x not in I:
+                    l = x
+                    break
+            if l:
                 break
 
-    new_S = set()
+    if l[0] != '-':
+        lcomp = '-'+l
+    elif l[0] == '-':
+        lcomp = l[:0] + l[1:]
+
+    new_S = []
     for i in S:
-        new_S.add(elimina_clausulas(l, i).replace(l, ''))
+        new_clause = []
+        for x in i:
+            if lcomp != x:
+                if l not in i:
+                    new_clause.append(x)
+        if new_clause not in new_S and new_clause:
+            new_S.append(new_clause)
 
-    new_I = {}
-    new_I[l] = 1
-    if DPLL(new_S, new_I):
-        new_I[l] = 0
-        return True, new_I
+    I[l] = 1
+    print(I)
+    if DPLL(new_S, I):
+        return "Satisfacible", I
     
     else:
-        new_Sv2 = set()
+        new_Sv2 = []
         for i in S:
-            new_Sv2.add(elimina_clausulas(l, i).replace(l, ''))
-        new_I[l] = 0
-        return DPLL(new_Sv2, new_I)
+            new_clause = []
+            for x in i:
+                if l != x:
+                    if lcomp not in i:
+                        new_clause.append(x)
+            if new_clause not in new_Sv2 and new_clause:
+                new_Sv2.append(new_clause)
+        I[l] = 0
+        return DPLL(new_Sv2, I)
 
 
-a = {'p-qr', '-pq-r','-p-qr','-p-q-r'}
-print(DPLL(a, {}))
+
+
+
+b = [['p', '-q', 'r'], ['-p', 'q', '-r'], ['-p', '-q', 'r'], ['-p', '-q', '-r']]
+print(DPLL(b, {}))
